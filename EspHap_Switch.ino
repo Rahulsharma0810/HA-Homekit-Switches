@@ -201,6 +201,32 @@ void setup() {
   // Load the previous switch states
   loadSwitchStates();
 
+  // Set the initial state of HomeKit characteristics
+  homekit_characteristic_t* ch_1 = homekit_service_characteristic_by_type(hapservice_1, HOMEKIT_CHARACTERISTIC_ON);
+  if (ch_1) {
+    homekit_characteristic_notify(ch_1, HOMEKIT_BOOL(switchState_1));
+  }
+  homekit_characteristic_t* ch_2 = homekit_service_characteristic_by_type(hapservice_2, HOMEKIT_CHARACTERISTIC_ON);
+  if (ch_2) {
+    homekit_characteristic_notify(ch_2, HOMEKIT_BOOL(switchState_2));
+  }
+  homekit_characteristic_t* ch_3 = homekit_service_characteristic_by_type(hapservice_3, HOMEKIT_CHARACTERISTIC_ON);
+  if (ch_3) {
+    homekit_characteristic_notify(ch_3, HOMEKIT_BOOL(switchState_3));
+  }
+  homekit_characteristic_t* ch_4 = homekit_service_characteristic_by_type(hapservice_4, HOMEKIT_CHARACTERISTIC_ON);
+  if (ch_4) {
+    homekit_characteristic_notify(ch_4, HOMEKIT_BOOL(switchState_4));
+  }
+  homekit_characteristic_t* ch_5 = homekit_service_characteristic_by_type(hapservice_5, HOMEKIT_CHARACTERISTIC_ON);
+  if (ch_5) {
+    homekit_characteristic_notify(ch_5, HOMEKIT_BOOL(switchState_5));
+  }
+  homekit_characteristic_t* ch_6 = homekit_service_characteristic_by_type(hapservice_6, HOMEKIT_CHARACTERISTIC_ON);
+  if (ch_6) {
+    homekit_characteristic_notify(ch_6, HOMEKIT_BOOL(switchState_6));
+  }
+
   hap_init_homekit_server();   
 
 #ifdef ENABLE_WEB_SERVER
@@ -226,8 +252,26 @@ void setup() {
 }
 
 void handleGetVal() {
-  server.send(200, FPSTR(TEXT_PLAIN), getSwitchState(relay_gpio_1) ? "1" : "0");
+  String varName = server.arg("var");
+  bool switchState = false;
+
+  if (varName == "ch1" && hapservice_1) {
+    switchState = getSwitchState(relay_gpio_1);
+  } else if (varName == "ch2" && hapservice_2) {
+    switchState = getSwitchState(relay_gpio_2);
+  } else if (varName == "ch3" && hapservice_3) {
+    switchState = getSwitchState(relay_gpio_3);
+  } else if (varName == "ch4" && hapservice_4) {
+    switchState = getSwitchState(relay_gpio_4);
+  } else if (varName == "ch5" && hapservice_5) {
+    switchState = getSwitchState(relay_gpio_5);
+  } else if (varName == "ch6" && hapservice_6) {
+    switchState = getSwitchState(relay_gpio_6);
+  }
+
+  server.send(200, FPSTR(TEXT_PLAIN), switchState ? "1" : "0");
 }
+
 
 void handleSetVal() {
   if (server.args() != 2) {
